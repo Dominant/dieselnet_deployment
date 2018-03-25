@@ -1,0 +1,61 @@
+version: '3'
+services:
+  api:
+    build:
+      context: ./dieselnet_api
+      dockerfile: ./build/Dockerfile
+    ports:
+      - 9090:9090
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_USER: ${MYSQL_USER}
+      DB_PASS: ${MYSQL_PASSWORD}
+    volumes:
+      - ./dieselnet_api:/var/www/api
+    links:
+      - mysql
+      - rabbitmq
+    depends_on:
+      - mysql
+      - rabbitmq
+    networks:
+      - internal
+  mysql:
+    image: mysql:5.7
+    ports:
+      - 3306
+    volumes:
+      - /var/lib/mysql
+    environment:
+      MYSQL_DATABASE: dieselnet_api
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    networks:
+      - internal
+  rabbitmq:
+    image: rabbitmq
+    hostname: "rabbitmq"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - internal
+  sms_service:
+    build:
+      context: ./dieselnet_sms_service
+    volumes:
+      - ./dieselnet_sms_service:/var/dieselnet_sms_service
+    environment:
+      - TWILLIO_ACCOUNT_SID=${TWILLIO_ACCOUNT_SID}
+      - TWILLIO_AUTH_TOKEN=${TWILLIO_AUTH_TOKEN}
+      - TWILLIO_PHONE=${TWILLIO_PHONE}
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - internal
+networks:
+  internal:
+    driver: bridge

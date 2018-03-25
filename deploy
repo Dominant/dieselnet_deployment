@@ -1,0 +1,32 @@
+#!/bin/sh
+
+build_start()
+{
+	build
+	start
+}
+
+build()
+{
+	echo "Building services"
+	docker-compose build
+}
+
+start()
+{
+	echo "Starting services"
+	docker-compose up -d 
+	docker-compose exec api ./bin/doctrine-migrations migrations:migrate --no-interaction --configuration migrations/migrations.xml --db-configuration migrations/connection.php
+}
+
+case $1 in
+    build-start)
+        build_start
+    ;;
+    build)
+        build
+    ;;
+    start)
+        start
+    ;;
+esac
