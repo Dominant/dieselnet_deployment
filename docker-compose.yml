@@ -7,9 +7,9 @@ services:
     ports:
       - 9090:9090
     environment:
-      DB_HOST: ${MYSQL_HOST}
-      DB_USER: ${MYSQL_USER}
-      DB_PASS: ${MYSQL_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
       PORTAL_SECRET: ${PORTAL_SECRET}
     volumes:
       - ./dieselnet_api:/var/www/api
@@ -29,8 +29,8 @@ services:
       - /var/lib/mysql
     environment:
       MYSQL_DATABASE: dieselnet_api
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     networks:
       - internal
