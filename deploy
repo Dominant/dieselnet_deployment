@@ -16,6 +16,7 @@ start()
 {
 	echo "Starting services"
 	docker-compose up -d 
+    docker-compose exec api composer install
 	docker-compose exec api ./bin/doctrine-migrations migrations:migrate --no-interaction --configuration migrations/migrations.xml --db-configuration migrations/connection.php
 }
 
